@@ -3,56 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Box breathing</title>
+<meta name="theme-color" content="#101216">
+<meta name="color-scheme" content="dark">
+<title>Breathe</title>
 <style>
-  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:system-ui, sans-serif; background:#fafaf7; color:#2c2c2a; }
-  svg { width:min(90vw, 360px); height:auto; }
-  .side { font-size:13px; fill:#6b6b66; }
-  button { margin-top:16px; padding:10px 28px; font-size:16px; border:1px solid #b4b2a9; border-radius:8px; background:#fff; color:#2c2c2a; cursor:pointer; }
-  @media (prefers-color-scheme: dark) {
-    body { background:#1f1f1d; color:#eee; }
-    .side { fill:#aaa; }
-    #phase { fill:#eee; }
-    #count { fill:#aaa; }
-    #box { stroke:#555; }
-    button { background:#2c2c2a; color:#eee; border-color:#555; }
-  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:#101216}
+  body{color:#d9d6cd;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;-webkit-font-smoothing:antialiased}
+  main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .screen{display:flex;flex-direction:column;align-items:center;animation:fadein 1.2s ease}
+  .hidden{display:none}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+  h1,h2{font-weight:400;color:#e6e3da;margin:0 0 12px}
+  h1{font-size:22px} h2{font-size:20px}
+  .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;max-width:320px}
+  .small{color:#5f5d58;font-size:13px;margin:14px 0 0}
+  svg{width:min(80vw,320px);height:auto;display:block}
+  button{background:transparent;color:#cfccc3;border:1px solid #33363d;border-radius:999px;padding:10px 26px;font-size:15px;font-family:inherit;cursor:pointer;transition:border-color .4s,color .4s}
+  button:hover,button:focus-visible{border-color:#5a5e66;color:#e6e3da;outline:none}
+  .row{display:flex;gap:12px;margin-top:22px}
+  .quiet{border:none;color:#5f5d58;font-size:13px;padding:6px 12px;margin-top:18px}
+  .quiet:hover,.quiet:focus-visible{color:#8f8c84}
+  .progress{width:180px;height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
+  .bar{height:100%;width:0;background:#4f7a6e}
+  .line{transition:opacity .8s ease}
+  .fact{min-height:3.4em;margin-top:40px;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;transition:opacity 1s ease}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  @media (prefers-reduced-motion:reduce){.screen{animation:none}.fact,.line{transition:none}}
 </style>
 </head>
 <body>
-<svg viewBox="0 0 300 300">
-  <rect id="box" x="50" y="50" width="200" height="200" fill="none" stroke="#ccc" stroke-width="2" rx="4"/>
-  <line id="s0" x1="50" y1="250" x2="50" y2="50" stroke="#1D9E75" stroke-width="4" stroke-linecap="round" opacity="0"/>
-  <line id="s1" x1="50" y1="50" x2="250" y2="50" stroke="#1D9E75" stroke-width="4" stroke-linecap="round" opacity="0"/>
-  <line id="s2" x1="250" y1="50" x2="250" y2="250" stroke="#1D9E75" stroke-width="4" stroke-linecap="round" opacity="0"/>
-  <line id="s3" x1="250" y1="250" x2="50" y2="250" stroke="#1D9E75" stroke-width="4" stroke-linecap="round" opacity="0"/>
-  <text class="side" x="30" y="150" text-anchor="middle" transform="rotate(-90 30 150)">Breathe in</text>
-  <text class="side" x="150" y="36" text-anchor="middle">Hold</text>
-  <text class="side" x="270" y="150" text-anchor="middle" transform="rotate(90 270 150)">Breathe out</text>
-  <text class="side" x="150" y="274" text-anchor="middle">Wait</text>
-  <text id="phase" x="150" y="140" text-anchor="middle" style="font-size:20px;font-weight:500;fill:#2c2c2a">Ready</text>
-  <text id="count" x="150" y="180" text-anchor="middle" style="font-size:36px;font-weight:500;fill:#6b6b66">4</text>
-  <circle id="dot" cx="50" cy="250" r="10" fill="#1D9E75"/>
-</svg>
-<button id="btn">Start</button>
+<main>
+
+  <section id="intro" class="screen">
+    <h1>Let's breathe together</h1>
+    <p class="soft">Find a comfortable position. Follow the circle and the dot. You can stop anytime.</p>
+    <button id="begin">Begin</button>
+    <p class="small">About 2 minutes</p>
+  </section>
+
+  <section id="session" class="screen hidden">
+    <svg viewBox="0 0 300 300" aria-hidden="true">
+      <rect x="50" y="50" width="200" height="200" rx="6" fill="none" stroke="#262930" stroke-width="1.5"/>
+      <line id="s0" class="line" x1="50" y1="250" x2="50" y2="50" stroke="#5e9384" stroke-width="3" stroke-linecap="round" opacity="0"/>
+      <line id="s1" class="line" x1="50" y1="50" x2="250" y2="50" stroke="#5e9384" stroke-width="3" stroke-linecap="round" opacity="0"/>
+      <line id="s2" class="line" x1="250" y1="50" x2="250" y2="250" stroke="#5e9384" stroke-width="3" stroke-linecap="round" opacity="0"/>
+      <line id="s3" class="line" x1="250" y1="250" x2="50" y2="250" stroke="#5e9384" stroke-width="3" stroke-linecap="round" opacity="0"/>
+      <circle id="breath" cx="150" cy="150" r="32" fill="#5e9384" fill-opacity="0.10" stroke="#5e9384" stroke-opacity="0.35" stroke-width="1.5"/>
+      <text x="30" y="150" text-anchor="middle" transform="rotate(-90 30 150)" fill="#55534e" font-size="12">Breathe in</text>
+      <text x="150" y="36" text-anchor="middle" fill="#55534e" font-size="12">Hold</text>
+      <text x="270" y="150" text-anchor="middle" transform="rotate(90 270 150)" fill="#55534e" font-size="12">Breathe out</text>
+      <text x="150" y="272" text-anchor="middle" fill="#55534e" font-size="12">Rest</text>
+      <text id="phase" x="150" y="148" text-anchor="middle" fill="#e6e3da" font-size="19">Breathe in</text>
+      <text id="count" x="150" y="174" text-anchor="middle" fill="#6f6c66" font-size="15">4</text>
+      <circle id="dot" cx="50" cy="250" r="7" fill="#86b8a9"/>
+    </svg>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div class="row">
+      <button id="pause">Pause</button>
+      <button id="end">End</button>
+    </div>
+  </section>
+
+  <section id="outro" class="screen hidden">
+    <h2>Notice how you feel now</h2>
+    <p class="soft">There's no right way to feel. Stay here as long as you like.</p>
+    <button id="again">Breathe again</button>
+  </section>
+
+  <p id="fact" class="fact"></p>
+  <button id="cues" class="quiet">Gentle cues: off</button>
+  <p id="live" class="sr" aria-live="polite"></p>
+
+</main>
+
 <script>
+  const D=4000, ROUNDS=8, TOTAL=D*4*ROUNDS, R0=32, R1=88;
   const pts=[[50,250],[50,50],[250,50],[250,250],[50,250]];
-  const names=['Breathe in','Hold','Breathe out','Wait'];
-  const D=4000; let running=false, start=0, elapsed=0, raf;
-  const dot=document.getElementById('dot'), ph=document.getElementById('phase'),
-        ct=document.getElementById('count'), btn=document.getElementById('btn');
-  function draw(t){
-    const cyc=t%(D*4), i=Math.floor(cyc/D), f=(cyc%D)/D, a=pts[i], b=pts[i+1];
-    dot.setAttribute('cx', a[0]+(b[0]-a[0])*f);
-    dot.setAttribute('cy', a[1]+(b[1]-a[1])*f);
-    ph.textContent=names[i]; ct.textContent=4-Math.floor(f*4);
-    for(let k=0;k<4;k++) document.getElementById('s'+k).setAttribute('opacity', k===i?1:0);
+  const names=['Breathe in','Hold','Breathe out','Rest'];
+  const tones=[392,440,349,330];
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $=id=>document.getElementById(id);
+  const dot=$('dot'), breath=$('breath'), phase=$('phase'), count=$('count'), bar=$('bar'), live=$('live');
+  let running=false, inSession=false, start=0, elapsed=0, raf=null, last=-1, cues=false, actx=null, wake=null;
+
+  const ease=f=>0.5-0.5*Math.cos(Math.PI*f);
+
+  function show(id){ ['intro','session','outro'].forEach(s=>$(s).classList.toggle('hidden', s!==id)); }
+
+  function cue(i){
+    if(!cues) return;
+    if(navigator.vibrate) navigator.vibrate(20);
+    if(!actx) return;
+    const t=actx.currentTime, o=actx.createOscillator(), g=actx.createGain();
+    o.type='sine'; o.frequency.value=tones[i];
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(0.04,t+0.08);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+1.4);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t); o.stop(t+1.5);
   }
-    function loop(now){ elapsed=Math.max(0, now-start); draw(elapsed); raf=requestAnimationFrame(loop); }
-  btn.onclick=()=>{
-    if(running){ cancelAnimationFrame(raf); running=false; btn.textContent='Resume'; }
-    else { running=true; start=performance.now()-elapsed; raf=requestAnimationFrame(loop); btn.textContent='Pause'; }
+
+  function draw(t){
+    const cyc=t%(D*4), i=Math.min(3,Math.floor(cyc/D)), f=(cyc-i*D)/D;
+    const a=pts[i], b=pts[i+1];
+    if(!reduce){
+      dot.setAttribute('cx', a[0]+(b[0]-a[0])*f);
+      dot.setAttribute('cy', a[1]+(b[1]-a[1])*f);
+    }
+    const level = i===0 ? ease(f) : i===1 ? 1 : i===2 ? 1-ease(f) : 0;
+    if(reduce){
+      breath.setAttribute('r',60);
+      breath.setAttribute('fill-opacity',(0.05+0.15*level).toFixed(3));
+    } else {
+      breath.setAttribute('r',(R0+(R1-R0)*level).toFixed(2));
+    }
+    if(i!==last){
+      last=i;
+      phase.textContent=names[i];
+      live.textContent=names[i];
+      for(let k=0;k<4;k++) $('s'+k).setAttribute('opacity', k===i?0.9:0);
+      cue(i);
+    }
+    count.textContent=4-Math.floor(f*4);
+  }
+
+  function loop(now){
+    elapsed=Math.max(0, now-start);
+    if(elapsed>=TOTAL){ finish(); return; }
+    draw(elapsed);
+    bar.style.width=(elapsed/TOTAL*100).toFixed(2)+'%';
+    raf=requestAnimationFrame(loop);
+  }
+
+  async function keepAwake(){ try{ if('wakeLock' in navigator) wake=await navigator.wakeLock.request('screen'); }catch(e){} }
+  function letSleep(){ try{ if(wake){ wake.release(); wake=null; } }catch(e){} }
+
+  function run(){
+    running=true;
+    start=performance.now()-elapsed;
+    last=-1;
+    $('pause').textContent='Pause';
+    keepAwake();
+    raf=requestAnimationFrame(loop);
+  }
+
+  function pause(){
+    if(!running) return;
+    running=false;
+    cancelAnimationFrame(raf);
+    letSleep();
+    phase.textContent='Paused';
+    count.textContent='';
+    live.textContent='Paused';
+    $('pause').textContent='Resume';
+  }
+
+  function begin(){
+    elapsed=0; inSession=true;
+    bar.style.width='0%';
+    show('session');
+    run();
+  }
+
+  function finish(){
+    running=false; inSession=false;
+    cancelAnimationFrame(raf);
+    letSleep();
+    show('outro');
+    live.textContent='Session complete. Notice how you feel now.';
+  }
+
+  $('begin').onclick=begin;
+  $('again').onclick=begin;
+  $('end').onclick=finish;
+  $('pause').onclick=()=>{ running ? pause() : run(); };
+  $('cues').onclick=()=>{
+    cues=!cues;
+    $('cues').textContent='Gentle cues: '+(cues?'on':'off');
+    if(cues){
+      if(!actx){ const AC=window.AudioContext||window.webkitAudioContext; if(AC) actx=new AC(); }
+      if(actx && actx.state==='suspended') actx.resume();
+    }
   };
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden && inSession) pause(); });
+
+  const facts=[
+    "Slow breathing switches on your body's rest-and-digest system.",
+    "Your heart rate naturally slows a little each time you breathe out.",
+    "Slow, steady breaths stimulate the vagus nerve, which helps the body settle.",
+    "Anxiety makes breathing quick and shallow. Slowing it sends the opposite signal.",
+    "Breathing is automatic, but it's one of the few body systems you can also steer.",
+    "Box breathing slows you to about 4 breaths a minute. At rest, most adults take 12 to 20.",
+    "Slow breathing raises heart rate variability, a sign of a body that recovers well from stress.",
+    "In a Stanford study, five minutes of daily breathwork lifted people's mood over a month.",
+    "Box breathing is taught to some soldiers and first responders to stay steady under pressure.",
+    "Counting gives a busy mind one small, simple thing to hold on to.",
+    "Following your breath gently brings your attention back to right now.",
+    "In a calm breath, your diaphragm does the work, not your chest and shoulders.",
+    "Breathing through your nose warms, moistens, and filters the air.",
+    "You can do this anywhere. No one around you even has to know.",
+    "Like any skill, calm breathing gets easier and quicker with practice.",
+    "Feeling lightheaded? Breathe normally for a moment, then join back in."
+  ];
+  for(let i=facts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [facts[i],facts[j]]=[facts[j],facts[i]]; }
+  let fi=0; const factEl=$('fact');
+  factEl.textContent=facts[0];
+  setInterval(()=>{
+    fi=(fi+1)%facts.length;
+    if(reduce){ factEl.textContent=facts[fi]; return; }
+    factEl.style.opacity=0;
+    setTimeout(()=>{ factEl.textContent=facts[fi]; factEl.style.opacity=1; },1000);
+  },9000);
 </script>
 </body>
 </html>
