@@ -8,6 +8,10 @@
 <title>Breathe · 2-minute box breathing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Calmbox">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="A calm, guided box breathing exercise. Follow the circle for about 2 minutes and let your mind settle.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://calmbox.vercel.app/">
@@ -22,29 +26,36 @@
   :root{--svg:min(80vw,320px);--box:calc(var(--svg) * 2 / 3)}
   html,body{margin:0;background:#101216}
   body{color:#d9d6cd;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px;-webkit-font-smoothing:antialiased}
-  main{max-width:420px;margin:0 auto;min-height:calc(100vh - 48px);display:flex;flex-direction:column;align-items:center;text-align:center}
+  main{max-width:420px;margin:0 auto;min-height:calc(100vh - 48px);min-height:calc(100svh - 48px);display:flex;flex-direction:column;align-items:center;text-align:center}
   .screen{display:flex;flex-direction:column;align-items:center;animation:fadein 1.2s ease}
-  #intro,#outro{margin:auto 0}
-  #session{padding-top:max(0px, calc(50vh - 260px))}
   .hidden{display:none}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
-  h1{font-weight:400;font-size:22px;color:#e6e3da;margin:0 0 12px;text-wrap:balance}
-  .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;max-width:300px;text-wrap:balance}
+
+  #intro,#outro{margin:auto 0;width:max-content;max-width:100%}
+  .fit{width:0;min-width:100%}
+
+  #session{padding-top:max(0px, calc(38vh - var(--svg) / 2 - 24px));padding-top:max(0px, calc(38svh - var(--svg) / 2 - 24px))}
+  #session .quiet,#session .fact{width:var(--box)}
+
+  h1{font-weight:400;font-size:22px;color:#e6e3da;margin:0 0 12px}
+  h2{font-weight:400;font-size:20px;color:#e6e3da;margin:0 0 12px}
+  .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;text-wrap:balance}
   .small{color:#5f5d58;font-size:13px;margin:14px 0 0}
-  .hint{color:#55534e;font-size:12px;line-height:1.6;margin:10px 0 0;max-width:240px;text-wrap:balance}
   svg{width:var(--svg);height:auto;display:block}
+
   button{background:transparent;color:#cfccc3;border:1px solid #33363d;border-radius:999px;padding:10px 26px;font-size:15px;font-family:inherit;cursor:pointer;transition:border-color .4s,color .4s;-webkit-tap-highlight-color:transparent}
   button:hover,button:focus-visible{border-color:#5a5e66;color:#e6e3da;outline:none}
   .row{display:flex;gap:14px;margin-top:22px}
-  .quiet{border:none;color:#6f6c66;font-size:13px;line-height:1.5;padding:12px 18px;min-height:44px;margin-top:14px;text-wrap:balance}
+  .quiet{border:none;border-radius:8px;color:#6f6c66;font-size:13px;line-height:1.5;padding:12px 0;min-height:44px;margin-top:14px;text-wrap:balance}
   .quiet:hover,.quiet:focus-visible{color:#9a978f}
+  .hint{font-size:12px;margin-top:4px;color:#5f5d58}
   .u{color:#a3a097;text-decoration:underline;text-decoration-color:#55585f;text-decoration-thickness:1px;text-underline-offset:4px}
   .quiet:hover .u,.quiet:focus-visible .u{color:#d9d6cd;text-decoration-color:#8f8c84}
+
   .progress{width:var(--box);height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
   .bar{height:100%;width:0;background:#4f7a6e}
   .line{transition:opacity .8s ease}
-  #factToggle{max-width:calc(var(--box) + 36px)}
-  .fact{margin:4px 0 0;color:#7d7a73;font-size:14px;line-height:1.7;width:var(--box);min-height:5.1em;text-wrap:balance;transition:opacity 1s ease;animation:fadein 1s ease}
+  .fact{margin:4px 0 0;color:#7d7a73;font-size:14px;line-height:1.7;min-height:5.1em;text-wrap:balance;transition:opacity 1s ease;animation:fadein 1s ease}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (prefers-reduced-motion:reduce){.screen,.fact{animation:none}.fact,.line{transition:none}}
 </style>
@@ -54,10 +65,10 @@
 
   <section id="intro" class="screen">
     <h1>Let's breathe together</h1>
-    <p class="soft">Find a comfortable position. Follow the circle and the dot. You can stop anytime.</p>
+    <p class="soft fit">Find a comfortable position. Follow the circle and the dot. You can stop anytime.</p>
     <button id="begin">Begin</button>
-    <p class="small">About 2 minutes</p>
-    <button class="quiet cues">Gentle cues: <span class="u">off</span></button>
+    <p class="small fit">About 2 minutes</p>
+    <button class="quiet cues fit">Gentle cues: <span class="u">off</span></button>
   </section>
 
   <section id="session" class="screen hidden">
@@ -87,12 +98,12 @@
   </section>
 
   <section id="outro" class="screen hidden">
-    <h1>Notice how you feel now</h1>
-    <p class="soft">There's no right way to feel. Stay here as long as you like.</p>
+    <h2>Notice how you feel now</h2>
+    <p class="soft fit">There's no right way to feel. Stay here as long as you like.</p>
     <button id="again">Breathe again</button>
-    <p class="small">About 2 minutes</p>
-    <button class="quiet cues">Gentle cues: <span class="u">off</span></button>
-    <p id="homeHint" class="hint">Keep it close: add this page to your home screen</p>
+    <p class="small fit">About 2 minutes</p>
+    <button class="quiet cues fit">Gentle cues: <span class="u">off</span></button>
+    <button id="homeHint" class="quiet hint fit"></button>
   </section>
 
   <p id="live" class="sr" aria-live="polite"></p>
@@ -110,7 +121,34 @@
   const factEl=$('fact'), factToggle=$('factToggle'), cueBtns=document.querySelectorAll('.cues');
   let running=false, inSession=false, start=0, elapsed=0, raf=null, last=-1, cues=false, actx=null, wake=null;
 
-  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){ $('homeHint').remove(); }
+  const ua=navigator.userAgent;
+  const isIOS=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  const isAndroid=/Android/i.test(ua);
+  const isMac=/Mac/i.test(navigator.platform) && !isIOS;
+  const standalone=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  let installEvt=null;
+  window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; });
+
+  const homeHint=$('homeHint');
+  if(standalone){
+    homeHint.remove();
+  } else {
+    homeHint.innerHTML = (isIOS||isAndroid)
+      ? 'Keep it close: <span class="u">add to home screen</span>'
+      : 'Keep it close: <span class="u">bookmark this page</span>';
+    homeHint.onclick=async()=>{
+      if(installEvt){
+        installEvt.prompt();
+        try{ await installEvt.userChoice; }catch(e){}
+        installEvt=null;
+        return;
+      }
+      homeHint.textContent = isIOS ? 'Tap the Share icon, then "Add to Home Screen"'
+        : isAndroid ? 'Open the browser menu (⋮), then "Add to home screen"'
+        : isMac ? 'Press ⌘ + D to bookmark this page'
+        : 'Press Ctrl + D to bookmark this page';
+    };
+  }
 
   let factsOn=false;
   try{ factsOn = localStorage.getItem('breatheFacts') === 'on'; }catch(e){}
@@ -201,6 +239,7 @@
     bar.style.width='0%';
     applyFacts();
     show('session');
+    window.scrollTo(0,0);
     run();
   }
 
@@ -209,6 +248,7 @@
     cancelAnimationFrame(raf);
     letSleep();
     show('outro');
+    window.scrollTo(0,0);
     live.textContent='Session complete. Notice how you feel now.';
   }
 
