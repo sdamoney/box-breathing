@@ -35,11 +35,11 @@
   .fit{width:0;min-width:100%}
 
   #session{padding-top:max(0px, calc(38vh - var(--svg) / 2 - 24px));padding-top:max(0px, calc(38svh - var(--svg) / 2 - 24px))}
-  #session .quiet,#session .fact{width:var(--box)}
+  #session .quiet{width:var(--box)}
 
   h1{font-weight:400;font-size:22px;color:#e6e3da;margin:0 0 12px}
   h2{font-weight:400;font-size:20px;color:#e6e3da;margin:0 0 12px}
-  .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;text-wrap:balance}
+  .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px}
   .small{color:#5f5d58;font-size:13px;margin:14px 0 0}
   svg{width:var(--svg);height:auto;display:block}
 
@@ -55,7 +55,8 @@
   .progress{width:var(--box);height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
   .bar{height:100%;width:0;background:#4f7a6e}
   .line{transition:opacity .8s ease}
-  .fact{margin:4px 0 0;color:#7d7a73;font-size:14px;line-height:1.7;min-height:5.1em;text-wrap:balance;transition:opacity 1s ease;animation:fadein 1s ease}
+  .fact{margin:4px 0 0;color:#7d7a73;font-size:clamp(12px, 3.8vw, 14px);line-height:1.7;height:5.1em;transition:opacity 1s ease;animation:fadein 1s ease}
+  .fact span{display:block;white-space:nowrap}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (prefers-reduced-motion:reduce){.screen,.fact{animation:none}.fact,.line{transition:none}}
 </style>
@@ -65,7 +66,7 @@
 
   <section id="intro" class="screen">
     <h1>Let's breathe together</h1>
-    <p class="soft fit">Find a comfortable position. Follow the circle and the dot. You can stop anytime.</p>
+    <p class="soft fit">Find a comfortable position.<br>Follow the circle and the dot.<br>You can stop anytime.</p>
     <button id="begin">Begin</button>
     <p class="small fit">About 2 minutes</p>
     <button class="quiet cues fit">Gentle cues: <span class="u">off</span></button>
@@ -99,7 +100,7 @@
 
   <section id="outro" class="screen hidden">
     <h2>Notice how you feel now</h2>
-    <p class="soft fit">There's no right way to feel. Stay here as long as you like.</p>
+    <p class="soft fit">There's no right way to feel.<br>Stay here as long as you like.</p>
     <button id="again">Breathe again</button>
     <p class="small fit">About 2 minutes</p>
     <button class="quiet cues fit">Gentle cues: <span class="u">off</span></button>
@@ -120,6 +121,7 @@
   const dot=$('dot'), breath=$('breath'), phase=$('phase'), count=$('count'), bar=$('bar'), live=$('live');
   const factEl=$('fact'), factToggle=$('factToggle'), cueBtns=document.querySelectorAll('.cues');
   let running=false, inSession=false, start=0, elapsed=0, raf=null, last=-1, cues=false, actx=null, wake=null;
+  let factsOn=false;
 
   const ua=navigator.userAgent;
   const isIOS=/iPhone|iPad|iPod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -149,9 +151,6 @@
         : 'Press Ctrl + D to bookmark this page';
     };
   }
-
-  let factsOn=false;
-  try{ factsOn = localStorage.getItem('breatheFacts') === 'on'; }catch(e){}
 
   const ease=f=>0.5-0.5*Math.cos(Math.PI*f);
 
@@ -256,11 +255,7 @@
   $('again').onclick=begin;
   $('end').onclick=finish;
   $('pause').onclick=()=>{ running ? pause() : run(); };
-  factToggle.onclick=()=>{
-    factsOn=!factsOn;
-    try{ localStorage.setItem('breatheFacts', factsOn?'on':'off'); }catch(e){}
-    applyFacts();
-  };
+  factToggle.onclick=()=>{ factsOn=!factsOn; applyFacts(); };
   cueBtns.forEach(btn=>btn.onclick=()=>{
     cues=!cues;
     cueBtns.forEach(b=>b.innerHTML='Gentle cues: <span class="u">'+(cues?'on':'off')+'</span>');
@@ -272,31 +267,32 @@
   document.addEventListener('visibilitychange',()=>{ if(document.hidden && inSession) pause(); });
 
   const facts=[
-    "Slow breathing switches on your body's rest-and-digest system.",
-    "Your heart rate naturally slows a little each time you breathe out.",
-    "Slow, steady breaths stimulate the vagus nerve, which helps the body settle.",
-    "Anxiety makes breathing quick and shallow. Slowing it sends the opposite signal.",
-    "Breathing is automatic, but it's one of the few body systems you can also steer.",
-    "Box breathing slows you to about 4 breaths a minute. At rest, most adults take 12 to 20.",
-    "Slow breathing raises heart rate variability, a sign of a body that recovers well from stress.",
-    "In a Stanford study, five minutes of daily breathwork lifted people's mood over a month.",
-    "Box breathing is taught to some soldiers and first responders to stay steady under pressure.",
-    "Counting gives a busy mind one small, simple thing to hold on to.",
-    "Following your breath gently brings your attention back to right now.",
-    "In a calm breath, your diaphragm does the work, not your chest and shoulders.",
-    "Breathing through your nose warms, moistens, and filters the air.",
-    "You can do this anywhere. No one around you even has to know.",
-    "Like any skill, calm breathing gets easier and quicker with practice.",
-    "Feeling lightheaded? Breathe normally for a moment, then join back in."
+    ["Slow breathing calms you.", "Your heart rate slows down.", "Tense muscles loosen up."],
+    ["Your heart slows on exhale.", "Long exhales calm you most.", "Let each exhale be slow."],
+    ["Anxiety speeds up breathing.", "Slowing down signals safety.", "Your body begins to settle."],
+    ["Breathing is automatic.", "You can also control it.", "It is always there for you."],
+    ["This is 4 breaths a minute.", "Most people take 12 to 20.", "Slower breathing is calmer."],
+    ["The mind follows the breath.", "Slow breaths quiet the mind.", "Racing thoughts slow down."],
+    ["Stanford studied breathwork.", "Five minutes a day helped.", "Mood improved in a month."],
+    ["Soldiers use box breathing.", "It helps them stay steady.", "Anyone can learn it too."],
+    ["A busy mind needs a task.", "Counting gives it one.", "Four counts is enough."],
+    ["Worry lives in the future.", "Your breath is in the now.", "Follow it back to now."],
+    ["Calm breaths start low.", "Let your belly rise first.", "Keep your shoulders soft."],
+    ["Your nose filters the air.", "It warms the air as well.", "Try breathing through it."],
+    ["You can do this anywhere.", "No one else will notice.", "It works at home or work."],
+    ["Calm breathing is a skill.", "Practice makes it easier.", "Every round you do counts."],
+    ["Lightheaded? Take a break.", "Breathe normally for a bit.", "Then join back in gently."],
+    ["Slow breathing shifts gears.", "Your body moves toward rest.", "Stress responses ease off."]
   ];
   for(let i=facts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [facts[i],facts[j]]=[facts[j],facts[i]]; }
+  const renderFact=f=>{ factEl.innerHTML=f.map(l=>'<span>'+l+'</span>').join(''); };
   let fi=0;
-  factEl.textContent=facts[0];
+  renderFact(facts[0]);
   setInterval(()=>{
     fi=(fi+1)%facts.length;
-    if(reduce){ factEl.textContent=facts[fi]; return; }
+    if(reduce){ renderFact(facts[fi]); return; }
     factEl.style.opacity=0;
-    setTimeout(()=>{ factEl.textContent=facts[fi]; factEl.style.opacity=1; },1000);
+    setTimeout(()=>{ renderFact(facts[fi]); factEl.style.opacity=1; },1000);
   },9000);
 </script>
 </body>
