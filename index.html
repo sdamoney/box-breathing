@@ -48,7 +48,7 @@
     ph.textContent=names[i]; ct.textContent=4-Math.floor(f*4);
     for(let k=0;k<4;k++) document.getElementById('s'+k).setAttribute('opacity', k===i?1:0);
   }
-  function loop(now){ elapsed=now-start; draw(elapsed); raf=requestAnimationFrame(loop); }
+    function loop(now){ elapsed=Math.max(0, now-start); draw(elapsed); raf=requestAnimationFrame(loop); }
   btn.onclick=()=>{
     if(running){ cancelAnimationFrame(raf); running=false; btn.textContent='Resume'; }
     else { running=true; start=performance.now()-elapsed; raf=requestAnimationFrame(loop); btn.textContent='Pause'; }
