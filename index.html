@@ -71,7 +71,7 @@
     <button id="again">Breathe again</button>
   </section>
 
-  <p id="fact" class="fact"></p>
+  <p id="fact" class="fact hidden"></p>
   <button id="cues" class="quiet">Gentle cues: off</button>
   <p id="live" class="sr" aria-live="polite"></p>
 
@@ -159,8 +159,9 @@
     $('pause').textContent='Resume';
   }
 
-  function begin(){
+    function begin(){
     elapsed=0; inSession=true;
+    factEl.classList.remove('hidden');
     bar.style.width='0%';
     show('session');
     run();
