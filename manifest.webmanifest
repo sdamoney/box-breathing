@@ -1,0 +1,11 @@
+{
+  "name": "Calmbox · Box breathing",
+  "short_name": "Calmbox",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101216",
+  "theme_color": "#101216",
+  "icons": [
+    { "src": "/favicon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
