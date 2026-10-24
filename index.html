@@ -8,7 +8,7 @@
 <title>Breathe · 2-minute box breathing</title>
 <meta name="description" content="A calm, guided box breathing exercise. Follow the circle for about 2 minutes and let your mind settle.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://box-breathing-kappa.vercel.app/">
+<meta property="og:url" content="https://calmbox.vercel.app/">
 <meta property="og:title" content="Breathe · 2-minute box breathing">
 <meta property="og:description" content="A calm, guided breathing exercise. Follow the circle and let your mind settle.">
 <meta property="og:site_name" content="Breathe">
@@ -65,8 +65,8 @@
       <text x="150" y="36" text-anchor="middle" fill="#55534e" font-size="12">Hold</text>
       <text x="270" y="150" text-anchor="middle" transform="rotate(90 270 150)" fill="#55534e" font-size="12">Breathe out</text>
       <text x="150" y="272" text-anchor="middle" fill="#55534e" font-size="12">Rest</text>
-      <text id="phase" x="150" y="148" text-anchor="middle" fill="#e6e3da" font-size="19">Breathe in</text>
-      <text id="count" x="150" y="174" text-anchor="middle" fill="#6f6c66" font-size="15">4</text>
+      <text id="phase" x="150" y="140" text-anchor="middle" dominant-baseline="central" fill="#e6e3da" font-size="19">Breathe in</text>
+      <text id="count" x="150" y="164" text-anchor="middle" dominant-baseline="central" fill="#6f6c66" font-size="15">4</text>
       <circle id="dot" cx="50" cy="250" r="7" fill="#86b8a9"/>
     </svg>
     <div class="progress"><div id="bar" class="bar"></div></div>
@@ -144,6 +144,7 @@
     if(i!==last){
       last=i;
       phase.textContent=names[i];
+      phase.setAttribute('y',140);
       live.textContent=names[i];
       for(let k=0;k<4;k++) $('s'+k).setAttribute('opacity', k===i?0.9:0);
       cue(i);
@@ -177,6 +178,7 @@
     cancelAnimationFrame(raf);
     letSleep();
     phase.textContent='Paused';
+    phase.setAttribute('y',150);
     count.textContent='';
     live.textContent='Paused';
     $('pause').textContent='Resume';
