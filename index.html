@@ -17,29 +17,29 @@
 <meta name="twitter:description" content="A calm, guided breathing exercise. Follow the circle and let your mind settle.">
 <style>
   *{box-sizing:border-box}
-  html,body{margin:0;min-height:100%;background:#101216}
-  body{color:#d9d6cd;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;-webkit-font-smoothing:antialiased}
-  main{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center}
+  html,body{margin:0;background:#101216}
+  body{color:#d9d6cd;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px;-webkit-font-smoothing:antialiased}
+  main{max-width:420px;margin:0 auto;min-height:calc(100vh - 48px);display:flex;flex-direction:column;align-items:center;text-align:center}
   .screen{display:flex;flex-direction:column;align-items:center;animation:fadein 1.2s ease}
+  #intro,#outro{margin:auto 0}
+  #session{padding-top:max(0px, calc(50vh - 260px))}
   .hidden{display:none}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
-  h1,h2{font-weight:400;color:#e6e3da;margin:0 0 12px}
-  h1{font-size:22px} h2{font-size:20px}
+  h1{font-weight:400;font-size:22px;color:#e6e3da;margin:0 0 12px}
   .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;max-width:320px}
   .small{color:#5f5d58;font-size:13px;margin:14px 0 0}
   svg{width:min(80vw,320px);height:auto;display:block}
   button{background:transparent;color:#cfccc3;border:1px solid #33363d;border-radius:999px;padding:10px 26px;font-size:15px;font-family:inherit;cursor:pointer;transition:border-color .4s,color .4s}
   button:hover,button:focus-visible{border-color:#5a5e66;color:#e6e3da;outline:none}
   .row{display:flex;gap:12px;margin-top:22px}
-  .quiet{border:none;color:#5f5d58;font-size:13px;padding:6px 12px;margin-top:6px}
+  .quiet{border:none;color:#5f5d58;font-size:13px;padding:6px 12px;margin-top:10px}
   .quiet:hover,.quiet:focus-visible{color:#8f8c84}
   .progress{width:180px;height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
   .bar{height:100%;width:0;background:#4f7a6e}
   .line{transition:opacity .8s ease}
-  .fact{min-height:3.4em;margin:40px 0 10px;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;transition:opacity 1s ease,visibility 1s}
-  .fact.off{visibility:hidden}
+  .fact{margin:8px 0 4px;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;min-height:3.4em;transition:opacity 1s ease;animation:fadein 1s ease}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  @media (prefers-reduced-motion:reduce){.screen{animation:none}.fact,.line{transition:none}}
+  @media (prefers-reduced-motion:reduce){.screen,.fact{animation:none}.fact,.line{transition:none}}
 </style>
 </head>
 <body>
@@ -50,6 +50,7 @@
     <p class="soft">Find a comfortable position. Follow the circle and the dot. You can stop anytime.</p>
     <button id="begin">Begin</button>
     <p class="small">About 2 minutes</p>
+    <button class="quiet cues">Gentle cues: off</button>
   </section>
 
   <section id="session" class="screen hidden">
@@ -73,17 +74,19 @@
       <button id="pause">Pause</button>
       <button id="end">End</button>
     </div>
+    <button id="factToggle" class="quiet"></button>
+    <p id="fact" class="fact hidden"></p>
+    <button class="quiet cues">Gentle cues: off</button>
   </section>
 
   <section id="outro" class="screen hidden">
-    <h2>Notice how you feel now</h2>
+    <h1>Notice how you feel now</h1>
     <p class="soft">There's no right way to feel. Stay here as long as you like.</p>
     <button id="again">Breathe again</button>
+    <p class="small">About 2 minutes</p>
+    <button class="quiet cues">Gentle cues: off</button>
   </section>
 
-  <p id="fact" class="fact hidden"></p>
-  <button id="factToggle" class="quiet hidden"></button>
-  <button id="cues" class="quiet">Gentle cues: off</button>
   <p id="live" class="sr" aria-live="polite"></p>
 
 </main>
@@ -96,7 +99,7 @@
   const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $=id=>document.getElementById(id);
   const dot=$('dot'), breath=$('breath'), phase=$('phase'), count=$('count'), bar=$('bar'), live=$('live');
-  const factEl=$('fact'), factToggle=$('factToggle');
+  const factEl=$('fact'), factToggle=$('factToggle'), cueBtns=document.querySelectorAll('.cues');
   let running=false, inSession=false, start=0, elapsed=0, raf=null, last=-1, cues=false, actx=null, wake=null;
 
   let factsOn=false;
@@ -107,7 +110,7 @@
   function show(id){ ['intro','session','outro'].forEach(s=>$(s).classList.toggle('hidden', s!==id)); }
 
   function applyFacts(){
-    factEl.classList.toggle('off', !factsOn);
+    factEl.classList.toggle('hidden', !factsOn);
     factToggle.textContent = factsOn ? 'Back to just breathing' : 'Mind wandering? Read something as you breathe';
   }
 
@@ -182,8 +185,6 @@
   function begin(){
     elapsed=0; inSession=true;
     bar.style.width='0%';
-    factEl.classList.remove('hidden');
-    factToggle.classList.remove('hidden');
     applyFacts();
     show('session');
     run();
@@ -206,14 +207,14 @@
     try{ localStorage.setItem('breatheFacts', factsOn?'on':'off'); }catch(e){}
     applyFacts();
   };
-  $('cues').onclick=()=>{
+  cueBtns.forEach(btn=>btn.onclick=()=>{
     cues=!cues;
-    $('cues').textContent='Gentle cues: '+(cues?'on':'off');
+    cueBtns.forEach(b=>b.textContent='Gentle cues: '+(cues?'on':'off'));
     if(cues){
       if(!actx){ const AC=window.AudioContext||window.webkitAudioContext; if(AC) actx=new AC(); }
       if(actx && actx.state==='suspended') actx.resume();
     }
-  };
+  });
   document.addEventListener('visibilitychange',()=>{ if(document.hidden && inSession) pause(); });
 
   const facts=[
