@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#101216">
 <meta name="color-scheme" content="dark">
 <title>Breathe · 2-minute box breathing</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <meta name="description" content="A calm, guided box breathing exercise. Follow the circle for about 2 minutes and let your mind settle.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://calmbox.vercel.app/">
@@ -29,15 +31,17 @@
   .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;max-width:320px}
   .small{color:#5f5d58;font-size:13px;margin:14px 0 0}
   svg{width:min(80vw,320px);height:auto;display:block}
-  button{background:transparent;color:#cfccc3;border:1px solid #33363d;border-radius:999px;padding:10px 26px;font-size:15px;font-family:inherit;cursor:pointer;transition:border-color .4s,color .4s}
+  button{background:transparent;color:#cfccc3;border:1px solid #33363d;border-radius:999px;padding:10px 26px;font-size:15px;font-family:inherit;cursor:pointer;transition:border-color .4s,color .4s;-webkit-tap-highlight-color:transparent}
   button:hover,button:focus-visible{border-color:#5a5e66;color:#e6e3da;outline:none}
-  .row{display:flex;gap:12px;margin-top:22px}
-  .quiet{border:none;color:#5f5d58;font-size:13px;padding:6px 12px;margin-top:10px}
-  .quiet:hover,.quiet:focus-visible{color:#8f8c84}
+  .row{display:flex;gap:14px;margin-top:22px}
+  .quiet{border:none;color:#6f6c66;font-size:13px;line-height:1.5;padding:12px 18px;min-height:44px;margin-top:14px}
+  .quiet:hover,.quiet:focus-visible{color:#9a978f}
+  .u{color:#a3a097;text-decoration:underline;text-decoration-color:#55585f;text-decoration-thickness:1px;text-underline-offset:4px}
+  .quiet:hover .u,.quiet:focus-visible .u{color:#d9d6cd;text-decoration-color:#8f8c84}
   .progress{width:180px;height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
   .bar{height:100%;width:0;background:#4f7a6e}
   .line{transition:opacity .8s ease}
-  .fact{margin:8px 0 4px;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;min-height:3.4em;transition:opacity 1s ease;animation:fadein 1s ease}
+  .fact{margin:4px 0 0;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;min-height:3.4em;transition:opacity 1s ease;animation:fadein 1s ease}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (prefers-reduced-motion:reduce){.screen,.fact{animation:none}.fact,.line{transition:none}}
 </style>
@@ -50,7 +54,7 @@
     <p class="soft">Find a comfortable position. Follow the circle and the dot. You can stop anytime.</p>
     <button id="begin">Begin</button>
     <p class="small">About 2 minutes</p>
-    <button class="quiet cues">Gentle cues: off</button>
+    <button class="quiet cues">Gentle cues: <span class="u">off</span></button>
   </section>
 
   <section id="session" class="screen hidden">
@@ -76,7 +80,7 @@
     </div>
     <button id="factToggle" class="quiet"></button>
     <p id="fact" class="fact hidden"></p>
-    <button class="quiet cues">Gentle cues: off</button>
+    <button class="quiet cues">Gentle cues: <span class="u">off</span></button>
   </section>
 
   <section id="outro" class="screen hidden">
@@ -84,7 +88,7 @@
     <p class="soft">There's no right way to feel. Stay here as long as you like.</p>
     <button id="again">Breathe again</button>
     <p class="small">About 2 minutes</p>
-    <button class="quiet cues">Gentle cues: off</button>
+    <button class="quiet cues">Gentle cues: <span class="u">off</span></button>
   </section>
 
   <p id="live" class="sr" aria-live="polite"></p>
@@ -111,7 +115,9 @@
 
   function applyFacts(){
     factEl.classList.toggle('hidden', !factsOn);
-    factToggle.textContent = factsOn ? 'Back to just breathing' : 'Mind wandering? Read something as you breathe';
+    factToggle.innerHTML = factsOn
+      ? 'Back to <span class="u">just breathing</span>'
+      : 'Mind wandering? <span class="u">Read something</span> as you breathe';
   }
 
   function cue(i){
@@ -211,7 +217,7 @@
   };
   cueBtns.forEach(btn=>btn.onclick=()=>{
     cues=!cues;
-    cueBtns.forEach(b=>b.textContent='Gentle cues: '+(cues?'on':'off'));
+    cueBtns.forEach(b=>b.innerHTML='Gentle cues: <span class="u">'+(cues?'on':'off')+'</span>');
     if(cues){
       if(!actx){ const AC=window.AudioContext||window.webkitAudioContext; if(AC) actx=new AC(); }
       if(actx && actx.state==='suspended') actx.resume();
