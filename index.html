@@ -5,7 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101216">
 <meta name="color-scheme" content="dark">
-<title>Breathe</title>
+<title>Breathe · 2-minute box breathing</title>
+<meta name="description" content="A calm, guided box breathing exercise. Follow the circle for about 2 minutes and let your mind settle.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://box-breathing-kappa.vercel.app/">
+<meta property="og:title" content="Breathe · 2-minute box breathing">
+<meta property="og:description" content="A calm, guided breathing exercise. Follow the circle and let your mind settle.">
+<meta property="og:site_name" content="Breathe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Breathe · 2-minute box breathing">
+<meta name="twitter:description" content="A calm, guided breathing exercise. Follow the circle and let your mind settle.">
 <style>
   *{box-sizing:border-box}
   html,body{margin:0;min-height:100%;background:#101216}
@@ -22,12 +31,13 @@
   button{background:transparent;color:#cfccc3;border:1px solid #33363d;border-radius:999px;padding:10px 26px;font-size:15px;font-family:inherit;cursor:pointer;transition:border-color .4s,color .4s}
   button:hover,button:focus-visible{border-color:#5a5e66;color:#e6e3da;outline:none}
   .row{display:flex;gap:12px;margin-top:22px}
-  .quiet{border:none;color:#5f5d58;font-size:13px;padding:6px 12px;margin-top:18px}
+  .quiet{border:none;color:#5f5d58;font-size:13px;padding:6px 12px;margin-top:6px}
   .quiet:hover,.quiet:focus-visible{color:#8f8c84}
   .progress{width:180px;height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
   .bar{height:100%;width:0;background:#4f7a6e}
   .line{transition:opacity .8s ease}
-  .fact{min-height:3.4em;margin-top:40px;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;transition:opacity 1s ease}
+  .fact{min-height:3.4em;margin:40px 0 10px;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;transition:opacity 1s ease,visibility 1s}
+  .fact.off{visibility:hidden}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (prefers-reduced-motion:reduce){.screen{animation:none}.fact,.line{transition:none}}
 </style>
@@ -72,6 +82,7 @@
   </section>
 
   <p id="fact" class="fact hidden"></p>
+  <button id="factToggle" class="quiet hidden"></button>
   <button id="cues" class="quiet">Gentle cues: off</button>
   <p id="live" class="sr" aria-live="polite"></p>
 
@@ -85,11 +96,20 @@
   const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $=id=>document.getElementById(id);
   const dot=$('dot'), breath=$('breath'), phase=$('phase'), count=$('count'), bar=$('bar'), live=$('live');
+  const factEl=$('fact'), factToggle=$('factToggle');
   let running=false, inSession=false, start=0, elapsed=0, raf=null, last=-1, cues=false, actx=null, wake=null;
+
+  let factsOn=false;
+  try{ factsOn = localStorage.getItem('breatheFacts') === 'on'; }catch(e){}
 
   const ease=f=>0.5-0.5*Math.cos(Math.PI*f);
 
   function show(id){ ['intro','session','outro'].forEach(s=>$(s).classList.toggle('hidden', s!==id)); }
+
+  function applyFacts(){
+    factEl.classList.toggle('off', !factsOn);
+    factToggle.textContent = factsOn ? 'Back to just breathing' : 'Mind wandering? Read something as you breathe';
+  }
 
   function cue(i){
     if(!cues) return;
@@ -159,10 +179,12 @@
     $('pause').textContent='Resume';
   }
 
-    function begin(){
+  function begin(){
     elapsed=0; inSession=true;
-    factEl.classList.remove('hidden');
     bar.style.width='0%';
+    factEl.classList.remove('hidden');
+    factToggle.classList.remove('hidden');
+    applyFacts();
     show('session');
     run();
   }
@@ -179,6 +201,11 @@
   $('again').onclick=begin;
   $('end').onclick=finish;
   $('pause').onclick=()=>{ running ? pause() : run(); };
+  factToggle.onclick=()=>{
+    factsOn=!factsOn;
+    try{ localStorage.setItem('breatheFacts', factsOn?'on':'off'); }catch(e){}
+    applyFacts();
+  };
   $('cues').onclick=()=>{
     cues=!cues;
     $('cues').textContent='Gentle cues: '+(cues?'on':'off');
@@ -208,7 +235,7 @@
     "Feeling lightheaded? Breathe normally for a moment, then join back in."
   ];
   for(let i=facts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [facts[i],facts[j]]=[facts[j],facts[i]]; }
-  let fi=0; const factEl=$('fact');
+  let fi=0;
   factEl.textContent=facts[0];
   setInterval(()=>{
     fi=(fi+1)%facts.length;
