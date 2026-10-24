@@ -19,6 +19,7 @@
 <meta name="twitter:description" content="A calm, guided breathing exercise. Follow the circle and let your mind settle.">
 <style>
   *{box-sizing:border-box}
+  :root{--svg:min(80vw,320px);--box:calc(var(--svg) * 2 / 3)}
   html,body{margin:0;background:#101216}
   body{color:#d9d6cd;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:24px;-webkit-font-smoothing:antialiased}
   main{max-width:420px;margin:0 auto;min-height:calc(100vh - 48px);display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -27,21 +28,23 @@
   #session{padding-top:max(0px, calc(50vh - 260px))}
   .hidden{display:none}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
-  h1{font-weight:400;font-size:22px;color:#e6e3da;margin:0 0 12px}
-  .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;max-width:320px}
+  h1{font-weight:400;font-size:22px;color:#e6e3da;margin:0 0 12px;text-wrap:balance}
+  .soft{color:#8f8c84;font-size:15px;line-height:1.7;margin:0 0 28px;max-width:300px;text-wrap:balance}
   .small{color:#5f5d58;font-size:13px;margin:14px 0 0}
-  svg{width:min(80vw,320px);height:auto;display:block}
+  .hint{color:#55534e;font-size:12px;line-height:1.6;margin:10px 0 0;max-width:240px;text-wrap:balance}
+  svg{width:var(--svg);height:auto;display:block}
   button{background:transparent;color:#cfccc3;border:1px solid #33363d;border-radius:999px;padding:10px 26px;font-size:15px;font-family:inherit;cursor:pointer;transition:border-color .4s,color .4s;-webkit-tap-highlight-color:transparent}
   button:hover,button:focus-visible{border-color:#5a5e66;color:#e6e3da;outline:none}
   .row{display:flex;gap:14px;margin-top:22px}
-  .quiet{border:none;color:#6f6c66;font-size:13px;line-height:1.5;padding:12px 18px;min-height:44px;margin-top:14px}
+  .quiet{border:none;color:#6f6c66;font-size:13px;line-height:1.5;padding:12px 18px;min-height:44px;margin-top:14px;text-wrap:balance}
   .quiet:hover,.quiet:focus-visible{color:#9a978f}
   .u{color:#a3a097;text-decoration:underline;text-decoration-color:#55585f;text-decoration-thickness:1px;text-underline-offset:4px}
   .quiet:hover .u,.quiet:focus-visible .u{color:#d9d6cd;text-decoration-color:#8f8c84}
-  .progress{width:180px;height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
+  .progress{width:var(--box);height:2px;background:#1f2228;border-radius:2px;margin-top:16px;overflow:hidden}
   .bar{height:100%;width:0;background:#4f7a6e}
   .line{transition:opacity .8s ease}
-  .fact{margin:4px 0 0;color:#7d7a73;font-size:14px;line-height:1.7;max-width:330px;min-height:3.4em;transition:opacity 1s ease;animation:fadein 1s ease}
+  #factToggle{max-width:calc(var(--box) + 36px)}
+  .fact{margin:4px 0 0;color:#7d7a73;font-size:14px;line-height:1.7;width:var(--box);min-height:5.1em;text-wrap:balance;transition:opacity 1s ease;animation:fadein 1s ease}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   @media (prefers-reduced-motion:reduce){.screen,.fact{animation:none}.fact,.line{transition:none}}
 </style>
@@ -89,6 +92,7 @@
     <button id="again">Breathe again</button>
     <p class="small">About 2 minutes</p>
     <button class="quiet cues">Gentle cues: <span class="u">off</span></button>
+    <p id="homeHint" class="hint">Keep it close: add this page to your home screen</p>
   </section>
 
   <p id="live" class="sr" aria-live="polite"></p>
@@ -105,6 +109,8 @@
   const dot=$('dot'), breath=$('breath'), phase=$('phase'), count=$('count'), bar=$('bar'), live=$('live');
   const factEl=$('fact'), factToggle=$('factToggle'), cueBtns=document.querySelectorAll('.cues');
   let running=false, inSession=false, start=0, elapsed=0, raf=null, last=-1, cues=false, actx=null, wake=null;
+
+  if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){ $('homeHint').remove(); }
 
   let factsOn=false;
   try{ factsOn = localStorage.getItem('breatheFacts') === 'on'; }catch(e){}
