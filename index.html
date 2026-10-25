@@ -93,8 +93,10 @@
       <text x="150" y="36" text-anchor="middle" fill="#55534e" font-size="12">Hold</text>
       <text x="270" y="150" text-anchor="middle" transform="rotate(90 270 150)" fill="#55534e" font-size="12">Breathe out</text>
       <text x="150" y="272" text-anchor="middle" fill="#55534e" font-size="12">Rest</text>
-      <text id="phase" x="150" y="140" text-anchor="middle" dominant-baseline="central" fill="#e6e3da" font-size="19">Breathe in</text>
-      <text id="count" x="150" y="164" text-anchor="middle" dominant-baseline="central" fill="#6f6c66" font-size="15">4</text>
+      <g id="label">
+        <text id="phase" x="150" y="140" text-anchor="middle" dominant-baseline="central" fill="#e6e3da" font-size="19">Breathe in</text>
+        <text id="count" x="150" y="164" text-anchor="middle" dominant-baseline="central" fill="#6f6c66" font-size="15">4</text>
+      </g>
       <circle id="dot" cx="50" cy="250" r="7" fill="#86b8a9"/>
     </svg>
     <div class="progress"><div id="bar" class="bar"></div></div>
@@ -127,7 +129,7 @@
   const tones=[392,440,349,330];
   const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $=id=>document.getElementById(id);
-  const dot=$('dot'), breath=$('breath'), phase=$('phase'), count=$('count'), bar=$('bar'), live=$('live');
+  const dot=$('dot'), breath=$('breath'), phase=$('phase'), count=$('count'), bar=$('bar'), live=$('live'), label=$('label');
   const factEl=$('fact'), factToggle=$('factToggle'), cueBtns=document.querySelectorAll('.cues');
   let running=false, inSession=false, start=0, elapsed=0, raf=null, last=-1, cues=false, actx=null, wake=null;
   let factsOn=false;
@@ -198,6 +200,8 @@
       breath.setAttribute('fill-opacity',(0.05+0.15*level).toFixed(3));
     } else {
       breath.setAttribute('r',(R0+(R1-R0)*level).toFixed(2));
+      const s=0.6+0.4*level;
+      label.setAttribute('transform','translate(150 150) scale('+s.toFixed(3)+') translate(-150 -150)');
     }
     if(i!==last){
       last=i;
